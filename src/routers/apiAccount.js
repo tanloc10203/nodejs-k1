@@ -2,6 +2,7 @@ const express = require('express');
 const AccountModel = require('../models/Account');
 
 let router = express.Router();
+const PAGE_SIZE = 3;
 
 router.post('/', (req, res, next) => {
   let username = req.body.username;
@@ -15,7 +16,8 @@ router.post('/', (req, res, next) => {
       password: password
     })
       .then(data => {
-        res.json("Add account success");
+        const { password, ...others } = data._doc;
+        res.json(others);
       })
       .catch(err => {
         res.status(500).json("Error from sever");
@@ -24,13 +26,41 @@ router.post('/', (req, res, next) => {
 });
 
 router.get('/', (req, res, next) => {
-  AccountModel.find({})
-    .then(data => {
-      res.json(data);
-    })
-    .catch(err => {
-      res.status(500).json("Error from server");
-    });
+  let page = req.query.page;
+
+  if (page) {
+    page = parseInt(page);
+    if (!page) {
+      res.status(404).json([]);
+    } else {
+      if (page < 1) page = 1;
+      const skip = (page - 1) * PAGE_SIZE;
+      // const skip = start + PAGE_SIZE;
+
+      AccountModel.find({}).skip(skip).limit(PAGE_SIZE)
+        .then(data => {
+          AccountModel.countDocuments({}).then(count => {
+            const total = Math.ceil(count / PAGE_SIZE);
+            res.json({
+              total: total,
+              data
+            });
+          })
+        })
+        .catch(err => {
+          console.log(err);
+          res.status(500).json("Error from server");
+        });
+    }
+  } else {
+    AccountModel.find({})
+      .then(data => {
+        res.json(data);
+      })
+      .catch(err => {
+        res.status(500).json("Error from server");
+      });
+  }
 });
 
 router.get('/:id', (req, res, next) => {

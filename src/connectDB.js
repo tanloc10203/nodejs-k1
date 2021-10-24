@@ -50,6 +50,16 @@ const AccountModel = mongoose.model('account', accountSchema);
 const CourseModel = mongoose.model('course', courseSchema);
 const CardModel = mongoose.model('card', cardSchema);
 
+
+for(let i = 1; i <= 20; i++) {
+  AccountModel.create({
+    username: "User_" + i,
+    password: "pass_" + i,
+  })
+    .then((data) => { console.log(data); })
+    .catch((err) => { console.log(err);})
+}
+
 /**
  * TODO Quan hệ table: populate.
  * ? Có 3 dạng quan hệ populate
@@ -84,15 +94,15 @@ const CardModel = mongoose.model('card', cardSchema);
 //   .catch(err => { console.error(err); });
 
 // * 3
-AccountModel.find({
-  username: "student1"
-}).populate('list_course.coureId')
-  .populate({
-    path: 'list_course.coureId',
-    populate: { path: 'teacher' }
-  })
-  .then(data => { console.log(data); })
-  .catch(err => { console.error(err); });
+// AccountModel.find({
+//   username: "student1"
+// }).populate('list_course.coureId')
+//   .populate({
+//     path: 'list_course.coureId',
+//     populate: { path: 'teacher' }
+//   })
+//   .then(data => { console.log(data); })
+//   .catch(err => { console.error(err); });
 
 /**
  * TODO tìm kiếm và so sánh
@@ -120,9 +130,9 @@ AccountModel.find({
 
 
 // TODO Xóa nhiều bản ghi
-// AccountModel.deleteMany({})
-//   .then(data => console.log(data))
-//   .catch(err => console.error(err));
+AccountModel.deleteMany({})
+  .then(data => console.log(data))
+  .catch(err => console.error(err));
 
 // CourseModel.deleteMany({})
 //   .then(data => console.log(data))

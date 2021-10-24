@@ -7,6 +7,7 @@ require('dotenv').config();
 
 let app = express();
 
+app.use(express.static('./src/public'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -17,7 +18,6 @@ app.get('/', (req, res) => {
 app.use('/admin/api1/v1/', router);
 app.use('/api/account/', router2);
 
-app.use(express.static('./src/public'));
 
 let port = process.env.PORT || 3999;
 app.listen(port, () => {
